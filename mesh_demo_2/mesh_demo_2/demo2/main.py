@@ -5,13 +5,13 @@ from OpenGL.GLU import *
 from pygame.locals import *
 from demo2.character.character import Character
 from demo2.mesh_loading.Mesh import Mesh
-from camera import Camera
+from demo2.character.camera import Camera
 
 os.environ["SDL_VIDEO_CENTERED"] = '1'
 display = [1000, 1080]
 pygame.init()
 screen = pygame.display.set_mode(display, DOUBLEBUF | OPENGL)
-camera = Camera()
+camera = Camera(0,0,0)
 
 
 def initialize():

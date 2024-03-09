@@ -38,6 +38,7 @@ class Character(object):
         keys = pygame.key.get_pressed()
         movement_speed = 5.0  # velocidad de la nave
 
+        # Movimiento de la nave
         if keys[pygame.K_w]:
             self.position += self.forward * movement_speed * delta_time
         if keys[pygame.K_s]:
@@ -47,11 +48,14 @@ class Character(object):
         if keys[pygame.K_d]:
             self.position += self.right * movement_speed * delta_time
 
-            # Actualización de la rotación de la cámara basada en el movimiento del ratón
+        # Rotación de la nave basada en el movimiento del ratón
         mouse_movement = pygame.mouse.get_rel()
-        self.camera.rotate(mouse_movement[0], mouse_movement[1])
+        self.forward = pygame.math.Vector3(0, 0, -1).rotate(-mouse_movement[0] * 0.1, self.up)
+        self.forward = self.forward.rotate(-mouse_movement[1] * 0.1, self.right)
+        self.forward.normalize()
 
-        # Actualizar la posición de la cámara para seguir a la nave
-        # Esto permite que la cámara mantenga su orientación mientras sigue a la nave
-        #self.camera.update(self.position, self.camera.forward, self.camera.up)
+        # Actualización de la posición y orientación de la cámara
+        self.camera.update(self.position, self.forward, self.up)
+
+
 

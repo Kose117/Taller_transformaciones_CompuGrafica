@@ -21,25 +21,13 @@ class Camera:
         self.pitch = max(-89.0, min(89.0, self.pitch + pitch))  # Limita el pitch para evitar el bloqueo del gimbal
 
     def update(self, ship_position, ship_forward, ship_up):
-        # Primeramente, actualiza forward basado en yaw y pitch.
-        # Esto determina la dirección en la que la cámara está mirando.
-        rad_yaw = np.radians(self.yaw)
-        rad_pitch = np.radians(self.pitch)
-        forward = pygame.math.Vector3(
-            np.cos(rad_pitch) * np.sin(rad_yaw),
-            np.sin(rad_pitch),
-            np.cos(rad_pitch) * np.cos(rad_yaw)
-        ).normalize()
+        # Actualiza la dirección forward basada en la orientación de la nave
+        self.forward = ship_forward
 
-        # Calcula la posición de la cámara basada en el offset y la rotación.
-        # Este enfoque mantiene la cámara orbitando alrededor de la nave.
-        self.eye = ship_position + forward * (-self.offset.z) + ship_up * self.offset.y
+        # Calcula la posición de la cámara basada en el offset y la posición de la nave
+        self.eye = ship_position + self.offset.x * self.right + self.offset.y * ship_up + self.offset.z * self.forward
 
-        # Actualiza look para que la cámara siempre mire hacia la nave.
+        # Actualiza la dirección look para que la cámara siempre mire hacia la nave
         self.look = ship_position
 
-        # Actualiza la vista de la cámara.
-        gluLookAt(self.eye.x, self.eye.y, self.eye.z,
-                  self.look.x, self.look.y, self.look.z,
-                  ship_up.x, ship_up.y, ship_up.z)
 
