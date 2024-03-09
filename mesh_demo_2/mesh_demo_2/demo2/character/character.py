@@ -26,7 +26,7 @@ class Character(object):
         gluLookAt(camera_position.x, camera_position.y, camera_position.z,
                   self.position.x, self.position.y, self.position.z,
                   self.up.x, self.up.y, self.up.z)
-
+        self.camera.update(screen_width, screen_height, camera_position)
         glPushMatrix()
         glTranslate(self.position.x, self.position.y, self.position.z)
         glScale(0.25, 0.25, 0.25)
@@ -34,7 +34,7 @@ class Character(object):
         self.mesh.draw_mesh()
         glPopMatrix()
 
-    def update(self, delta_time):
+    def update(self, delta_time, screen_width, screen_height):
         keys = pygame.key.get_pressed()
         movement_speed = 5.0  # velocidad de la nave
 
@@ -47,15 +47,6 @@ class Character(object):
             self.position -= self.right * movement_speed * delta_time
         if keys[pygame.K_d]:
             self.position += self.right * movement_speed * delta_time
-
-        # Rotación de la nave basada en el movimiento del ratón
-        mouse_movement = pygame.mouse.get_rel()
-        self.forward = pygame.math.Vector3(0, 0, -1).rotate(-mouse_movement[0] * 0.1, self.up)
-        self.forward = self.forward.rotate(-mouse_movement[1] * 0.1, self.right)
-        self.forward.normalize()
-
-        # Actualización de la posición y orientación de la cámara
-        self.camera.update(self.position, self.forward, self.up)
 
 
 
