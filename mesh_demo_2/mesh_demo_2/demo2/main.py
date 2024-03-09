@@ -1,10 +1,8 @@
 import os
-
 import pygame
 from OpenGL.GL import *
 from OpenGL.GLU import *
 from pygame.locals import *
-
 from demo2.character.character import Character
 from demo2.mesh_loading.Mesh import Mesh
 from camera import Camera
@@ -49,16 +47,24 @@ def main():
     pygame.event.set_grab(True)
     pygame.mouse.set_visible(False)
     run = True
-    character = Character('./assets/Fighter_01.obj')
+    character = Character('./assets/Fighter_01.obj', 0, 0, 0)
+    clock = pygame.time.Clock()  # Crea un reloj para controlar el tiempo
+
     while run:
+        delta_time = clock.tick(60) / 1000.0  # Calcula el delta_time para movimientos suaves
+
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 run = False
             if event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE:
                 run = False
-        display_world(character)
+
+        character.update(delta_time)  # Actualiza la posición y orientación de la nave
+        display_world(character)  # Dibuja la nave y el mundo
         pygame.display.flip()
+
         pygame.time.wait(10)
+
     pygame.quit()
     quit()
 
