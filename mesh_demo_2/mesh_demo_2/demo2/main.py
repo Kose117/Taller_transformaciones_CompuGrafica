@@ -59,7 +59,7 @@ def main():
             if event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE:
                 run = False
 
-        character.update(delta_time)  # Actualiza la posición y orientación de la nave
+        character.update(delta_time, screen.get_width(), screen.get_height())  # Actualiza la posición y orientación de la nave
         display_world(character)  # Dibuja la nave y el mundo
         pygame.display.flip()
 
