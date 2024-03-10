@@ -1,6 +1,7 @@
 from OpenGL.GL import *
 from OpenGL.GLU import *
 import pygame
+import math
 import numpy as np
 from demo2.character.camera import Camera
 from demo2.mesh_loading.Mesh import Mesh
@@ -15,17 +16,26 @@ class Character(object):
         self.yaw_angle = 0  # Ángulo de giro de la nave sobre el eje Y
         self.camera = Camera(0, 0, 0)  # Asigna la cámara aquí si es necesario
 
+
+
     def draw(self, screen_width, screen_height):
         glMatrixMode(GL_MODELVIEW)
         glLoadIdentity()
         glEnable(GL_DEPTH_TEST)
         glViewport(0, 0, screen_width, screen_height)
 
-        camera_position = self.position - self.forward * 8 + self.up * 4
+        # Calcular el nuevo vector forward basado en el yaw_angle
+        rad = math.radians(self.yaw_angle)  # Convertir el angulo de yaw a radianes
+        new_forward_x = math.sin(rad)
+        new_forward_z = math.cos(rad)
+        new_forward = pygame.math.Vector3(new_forward_x, 0, new_forward_z)
+
+        camera_position = self.position - new_forward * 8 + self.up * 4
 
         gluLookAt(camera_position.x, camera_position.y, camera_position.z,
                   self.position.x, self.position.y, self.position.z,
                   self.up.x, self.up.y, self.up.z)
+
         self.camera.update(screen_width, screen_height)
 
         glPushMatrix()
@@ -40,21 +50,36 @@ class Character(object):
         keys = pygame.key.get_pressed()
         movement_speed = 3.0
 
-        if keys[pygame.K_w]:
-            self.position += self.forward * movement_speed * delta_time
-        if keys[pygame.K_s]:
-            self.position -= self.forward * movement_speed * delta_time
-        if keys[pygame.K_a]:
-            self.position -= self.right * movement_speed * delta_time
-        if keys[pygame.K_d]:
-            self.position += self.right * movement_speed * delta_time
-
+        # Actualizar el ángulo de "yaw"
         if keys[pygame.K_q]:
             self.yaw_angle += 3  # velocidad de giro
         if keys[pygame.K_e]:
             self.yaw_angle -= 3  # velocidad de giro
 
+        # Nuevo vector "forward" basado en el "yaw_angle"
+        rad = math.radians(self.yaw_angle)  # Convertir el ángulo de "yaw" a radianes
+        self.forward.x = math.sin(rad)
+        self.forward.z = math.cos(rad)
 
+        # Asegúrate de normalizar el vector "forward" si es necesario
+        self.forward = self.forward.normalize()
+
+        # Mover el personaje basado en el nuevo vector "forward"
+        if keys[pygame.K_w]:
+            self.position += self.forward * movement_speed * delta_time
+        if keys[pygame.K_s]:
+            self.position -= self.forward * movement_speed * delta_time
+
+        # Nuevo vector laterial
+        self.right = pygame.math.Vector3.cross(self.forward, self.up).normalize()
+
+        # Girar camara
+        if keys[pygame.K_a]:
+            self.position -= self.right * movement_speed * delta_time
+        if keys[pygame.K_d]:
+            self.position += self.right * movement_speed * delta_time
+
+        # Subir bajar
         if keys[pygame.K_SPACE]:
             self.position += self.up * movement_speed * delta_time
         if keys[pygame.K_LSHIFT] or keys[pygame.K_RSHIFT]:
