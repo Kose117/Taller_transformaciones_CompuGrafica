@@ -17,7 +17,7 @@ display = [info.current_w, info.current_h]
 # Establecer el modo de pantalla completa
 screen = pygame.display.set_mode(display, DOUBLEBUF | OPENGL | pygame.FULLSCREEN)
 
-camera = Camera()
+camera = Camera(0,0,0)
 
 def initialize():
     glMatrixMode(GL_PROJECTION)
